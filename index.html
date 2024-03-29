@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <!--自分が使えればいいや-->
+    <meta charset="utf-8">
+    <title>いろいじり</title>
+    <link id='fav'rel='icon'type='image/svg+xml'>
+</head>
+<body>
+    色をいじります。それだけです。計算は適当です。
+    <br><b>RGB変換</b>
+    <table onchange="bg()">
+    <tr><td>カラーコード</td><td>RGB</td><td>HSV</td><td>こんな色</td></tr>
+    <tr><td>#<input type="text"id="c1C"maxlength="6"onchange="code()"value="000000"></td>
+        <td class="three"onchange="rgb()">R<input type="number"id="c1R"value="0">G<input type="number"id="c1G"value="0">B<input type="number"id="c1B"value="0"></td>
+        <td class="three"onchange="hsv()">H<input type="number"id="c1H"value="0">S<input type="number"id="c1S"value="0">V<input type="number"id="c1V"value="0"></td><td id="bg1"></td></tr>
+    </table><br>
+    <b>段階グラデーション</b><br>
+    <span onchange="gradation()">①#<input type="text"id="g1C"value="000000">②#<input type="text"id="g2C"value="000000"><input type="number"id="gNum"value="3">段階</span>
+    <table id="grad"></table>
+</body>
+<script>
+function code(){
+    if(c1C.value.length!=6){return}
+    let r=parseInt(c1C.value.slice(0,2),16),
+    g=parseInt(c1C.value.slice(2,4),16),
+    b=parseInt(c1C.value.slice(4,6),16);
+    c1R.value=r;c1G.value=g;c1B.value=b;
+    s2hsv(r,g,b);
+}
+function rgb(){
+    let r=nn(c1R.value,255,0),
+        g=nn(c1G.value,255,0),
+        b=nn(c1B.value,255,0);
+    c1C.value=r.toString(16).padStart(2,'0')
+    +g.toString(16).padStart(2,'0')
+    +b.toString(16).padStart(2,'0');
+    c1R.value=r;c1G.value=g;c1B.value=b;
+    s2hsv(r,g,b);
+}
+function hsv(){
+    let h=nn(c1H.value,360,0),s=nn(c1S.value,100,0),v=nn(c1V.value,360,0);
+    let max=v*255/100,arr;
+    let min=max-((s/100)*max);
+    if(h<60){arr=[max,(h/60)*(max-min)+min,min]}
+    else if(h<120){arr=[((120-h)/60)*(max-min)+min,max,min]}
+    else if(h<180){arr=[min,max,((h-120)-60)*(max-min)+min]}
+    else if(h<240){arr=[min,((240-h)-60)*(max-min)+min,max]}
+    else if(h<300){arr=[((h-240)/60)*(max-min)+min,min,max]}
+    else{arr=[max,min,((360-h)/60)*(max-min)+min]}
+    arr.forEach((t,i)=>{arr[i]=parseInt(t)});
+    c1R.value=arr[0];c1G.value=arr[1];c1B.value=arr[2];
+    c1C.value=arr[0].toString(16).padStart(2,'0')
+    +arr[1].toString(16).padStart(2,'0')
+    +arr[2].toString(16).padStart(2,'0');
+}
+function s2hsv(r,g,b){
+    let arr=[r,g,b];
+    let max=Math.max(...arr),min=Math.min(...arr);
+    let idx=arr.indexOf(max);let i1=(idx+2)%3,i2=(idx+1)%3;
+    let s=parseInt((max-min)/max*100),v=parseInt(max*100/255);
+    let h=(r==g&&g==b)?0:60*((arr[i2]-arr[i1])/(max-min))+idx*120;
+    h=isNaN(h)?0:h;s=isNaN(s)?0:s;v=isNaN(v)?0:v;
+    c1H.value=parseInt(h<0?h+360:h);c1S.value=s;c1V.value=v;
+    return [h,s,v];
+}
+function bg(){
+    bg1.style.backgroundColor="#"+c1C.value;
+}
+bg();
+function nn(n,max,min){
+    n=Number(n);
+    return parseInt(n<min?min:n>max?max:n);
+}
+function gradation(){
+    let n=nn(gNum.value,16,3);gNum.value=n;
+    if(g1C.value.length!=6){return}
+    if(g2C.value.length!=6){return}
+    let r1=parseInt(g1C.value.slice(0,2),16),g1=parseInt(g1C.value.slice(2,4),16),b1=parseInt(g1C.value.slice(4,6),16),
+    r2=parseInt(g2C.value.slice(0,2),16),g2=parseInt(g2C.value.slice(2,4),16),b2=parseInt(g2C.value.slice(4,6),16),
+    rd=r2-r1,gd=g2-g1,bd=b2-b1,str="";
+    for(let i=0;i<n;i++){
+        let r=nn(r1+rd/(n-1)*i,255,0),g=nn(g1+gd/(n-1)*i,255,0),b=nn(b1+bd/(n-1)*i,255,0);
+        let v=parseInt(Math.max(r,g,b)*100/255);
+        let c=r.toString(16).padStart(2,'0')
+        +g.toString(16).padStart(2,'0')
+        +b.toString(16).padStart(2,'0');
+        str+=`<tr style="color:#${v>65?"444":"EEE"};background-color:#${c}"><td>#${c}</td><td>R${r} G${g} B${b}</td></tr>`;
+    }
+    grad.innerHTML=str;
+}
+gradation();
+//ファビコン
+fav.href=`data:image/svg+xml;charset=utf8,
+${encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="#141E32"><path d="M3 4v17h6v-12h6v12h6v-16a2 2 0 0 0 -2 -2h-14a2 2 0 0 0 -2 2M4.5 16.5h3v3h-3v-3M16.5 16.5h3v3h-3v-3"/><style>@media(prefers-color-scheme:dark){path{fill:#BBB;}}</style></svg>')}`;
+</script>
+<style>
+body{
+    color:#444;
+    font-size:small;
+    width:650px;
+    margin:auto;padding:3em;
+    background-color:#EEE;
+    user-select:none;
+}
+input{
+    border:none;
+    outline:none;
+    margin:0.2em;
+    font-weight:bold;
+    color:#555;
+    width:6em;
+}
+table{
+    width:100%;
+    text-align:center;
+    table-layout:fixed;
+    margin:0;padding:0;
+    border-collapse:collapse;
+}
+.three input[type="number"]{
+    width:20%;
+}
+#grad{
+    width:100%;
+    height:24em;
+}
+</style>
+</html>
