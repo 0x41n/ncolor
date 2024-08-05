@@ -14,6 +14,8 @@
     <tr><td>#<input type="text"id="c1C"maxlength="6"onchange="code()"value="000000"></td>
         <td class="three"onchange="rgb()">R<input type="number"id="c1R"value="0">G<input type="number"id="c1G"value="0">B<input type="number"id="c1B"value="0"></td>
         <td class="three"onchange="hsv()">H<input type="number"id="c1H"value="0">S<input type="number"id="c1S"value="0">V<input type="number"id="c1V"value="0"></td><td id="bg1"></td></tr>
+        <tr><td>反対色 #<input type="text"id="o1C"maxlength="6"value="000000"disabled></td>
+        <td>補色 #<input type="text"id="o2C"maxlength="6"value="000000"disabled></td></tr>
     </table><br>
     <b>段階グラデーション</b><br>
     <span onchange="gradation()">①#<input type="text"id="g1C"value="000000">②#<input type="text"id="g2C"value="000000"><input type="number"id="gNum"value="3">段階</span>
@@ -27,6 +29,7 @@ function code(){
     b=parseInt(c1C.value.slice(4,6),16);
     c1R.value=r;c1G.value=g;c1B.value=b;
     s2hsv(r,g,b);
+    opo(r,g,b);
 }
 function rgb(){
     let r=nn(c1R.value,255,0),
@@ -37,6 +40,7 @@ function rgb(){
     +b.toString(16).padStart(2,'0');
     c1R.value=r;c1G.value=g;c1B.value=b;
     s2hsv(r,g,b);
+    opo(r,g,b);
 }
 function hsv(){
     let h=nn(c1H.value,360,0),s=nn(c1S.value,100,0),v=nn(c1V.value,360,0);
@@ -53,6 +57,7 @@ function hsv(){
     c1C.value=arr[0].toString(16).padStart(2,'0')
     +arr[1].toString(16).padStart(2,'0')
     +arr[2].toString(16).padStart(2,'0');
+    opo(arr[0],arr[1],arr[2]);
 }
 function s2hsv(r,g,b){
     let arr=[r,g,b];
@@ -63,6 +68,15 @@ function s2hsv(r,g,b){
     h=isNaN(h)?0:h;s=isNaN(s)?0:s;v=isNaN(v)?0:v;
     c1H.value=parseInt(h<0?h+360:h);c1S.value=s;c1V.value=v;
     return [h,s,v];
+}
+function opo(r,g,b){
+    o1C.value=(255-r).toString(16).padStart(2,'0')
+    +(255-g).toString(16).padStart(2,'0')
+    +(255-b).toString(16).padStart(2,'0');
+    let o=Math.max(r,g,b)+Math.min(r,g,b);
+    o2C.value=(o-r).toString(16).padStart(2,'0')
+    +(o-g).toString(16).padStart(2,'0')
+    +(o-b).toString(16).padStart(2,'0');
 }
 function bg(){
     bg1.style.backgroundColor="#"+c1C.value;
@@ -109,6 +123,7 @@ input{
     margin:0.2em;
     font-weight:bold;
     color:#555;
+    background-color:#FFF;
     width:6em;
 }
 table{
