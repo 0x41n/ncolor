@@ -14,8 +14,8 @@
     <tr><td>#<input type="text"id="c1C"maxlength="6"onchange="code()"value="000000"></td>
         <td class="three"onchange="rgb()">R<input type="number"id="c1R"value="0">G<input type="number"id="c1G"value="0">B<input type="number"id="c1B"value="0"></td>
         <td class="three"onchange="hsv()">H<input type="number"id="c1H"value="0">S<input type="number"id="c1S"value="0">V<input type="number"id="c1V"value="0"></td><td id="bg1"></td></tr>
-        <tr><td>反対色 #<input type="text"id="o1C"maxlength="6"value="000000"disabled></td>
-        <td>補色 #<input type="text"id="o2C"maxlength="6"value="000000"disabled></td></tr>
+        <tr><td>反対色 #<input type="text"id="o1C"maxlength="6"value="000000"disabled></td><td id="bg2"></td>
+        <td>補色 #<input type="text"id="o2C"maxlength="6"value="000000"disabled></td><td id="bg3"></td></tr>
     </table><br>
     <b>段階グラデーション</b><br>
     <span onchange="gradation()">①#<input type="text"id="g1C"value="000000">②#<input type="text"id="g2C"value="000000"><input type="number"id="gNum"value="3">段階</span>
@@ -80,6 +80,8 @@ function opo(r,g,b){
 }
 function bg(){
     bg1.style.backgroundColor="#"+c1C.value;
+    bg2.style.backgroundColor="#"+o1C.value;
+    bg3.style.backgroundColor="#"+o2C.value;
 }
 bg();
 function nn(n,max,min){
